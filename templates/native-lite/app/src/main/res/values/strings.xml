@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Factory Sample</string>
+    <string name="subtitle">Android nativo creado íntegramente desde el chat</string>
+    <string name="factory_ready">La Factory está lista</string>
+    <string name="verifying">Verificando componentes…</string>
+    <string name="verify">Verificar plantilla</string>
+    <string name="footer">Android Chat Factory · native-lite v1</string>
+</resources>

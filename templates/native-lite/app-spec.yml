@@ -1,0 +1,33 @@
+schema_version: 1
+profile: native-lite-java
+
+app:
+  name: Factory Sample
+  package: com.northzedam.factorysample
+  version_name: 1.0.0
+  language: es
+
+android:
+  min_sdk: 24
+  target_sdk: 35
+  orientation: adaptive
+
+design:
+  primary: '#61BDFF'
+  background: '#071A33'
+  surface: '#18375B'
+  style: modern-dark-mobile-first
+
+build:
+  workflow: Northzedam/android-chat-factory/.github/workflows/build-android.yml@main
+  artifact_name: factory-sample-debug-apk
+  signing: public-development-key
+
+requirements:
+  - Pantalla inicial de verificación de la Factory
+  - Estados visuales de funcionamiento
+
+restrictions:
+  - no-npm
+  - no-paid-services
+  - no-external-runtime-dependencies

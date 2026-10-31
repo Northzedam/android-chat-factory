@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_main"
+    android:fitsSystemWindows="true"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="88dp"
+        android:layout_height="88dp"
+        android:background="@drawable/bg_logo"
+        android:gravity="center"
+        android:text="A"
+        android:textColor="@color/navy_950"
+        android:textSize="38sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:gravity="center"
+        android:text="@string/app_name"
+        android:textColor="@color/white"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="9dp"
+        android:gravity="center"
+        android:text="@string/subtitle"
+        android:textColor="@color/muted"
+        android:textSize="14sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="34dp"
+        android:background="@drawable/bg_card"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:indeterminateTint="@color/accent"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/statusText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/factory_ready"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/verifyButton"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="22dp"
+            android:background="@drawable/bg_button"
+            android:text="@string/verify"
+            android:textAllCaps="false"
+            android:textColor="@color/navy_950"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="26dp"
+        android:text="@string/footer"
+        android:textColor="#607E9D"
+        android:textSize="11sp" />
+</LinearLayout>

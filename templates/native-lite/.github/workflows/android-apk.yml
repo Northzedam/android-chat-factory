@@ -1,0 +1,19 @@
+name: Compilar APK Android
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  android:
+    uses: Northzedam/android-chat-factory/.github/workflows/build-android.yml@main
+    with:
+      artifact_name: factory-sample-debug-apk

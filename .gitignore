@@ -1,0 +1,9 @@
+.DS_Store
+.idea/
+.vscode/
+*.log
+**/.gradle/
+**/local.properties
+**/build/
+*.apk
+*.aab

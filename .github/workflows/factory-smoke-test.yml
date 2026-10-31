@@ -1,0 +1,20 @@
+name: Factory Smoke Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/**'
+      - 'templates/native-lite/**'
+
+permissions:
+  contents: read
+
+jobs:
+  compile-template:
+    uses: ./.github/workflows/build-android.yml
+    with:
+      project_path: templates/native-lite
+      artifact_name: factory-smoke-apk
