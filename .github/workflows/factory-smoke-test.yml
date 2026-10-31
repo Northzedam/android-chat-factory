@@ -6,7 +6,8 @@ on:
     branches:
       - main
     paths:
-      - '.github/workflows/**'
+      - '.github/workflows/build-android.yml'
+      - '.github/workflows/factory-smoke-test.yml'
       - 'templates/native-lite/**'
 
 permissions:

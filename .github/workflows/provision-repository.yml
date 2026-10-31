@@ -1,0 +1,124 @@
+name: Crear repositorio de aplicación
+
+on:
+  issues:
+    types:
+      - opened
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  provision:
+    name: Crear repositorio privado
+    if: >-
+      github.event.issue.user.login == 'Northzedam' &&
+      github.event.issue.author_association == 'OWNER' &&
+      startsWith(github.event.issue.title, '[factory:create]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      REPO_CREATOR_TOKEN: ${{ secrets.REPO_CREATOR_TOKEN }}
+      REQUEST_BODY: ${{ github.event.issue.body }}
+
+    steps:
+      - name: Validar solicitud
+        id: request
+        run: |
+          if [ -z "${REPO_CREATOR_TOKEN:-}" ]; then
+            echo "::error::El secreto REPO_CREATOR_TOKEN no está configurado."
+            exit 1
+          fi
+
+          name="$(printf '%s' "$REQUEST_BODY" | jq --exit-status --raw-output '.name')"
+          visibility="$(printf '%s' "$REQUEST_BODY" | jq --raw-output '.visibility // "private"')"
+          description="$(printf '%s' "$REQUEST_BODY" | jq --raw-output '.description // "Aplicación creada con Android Chat Factory"')"
+          dry_run="$(printf '%s' "$REQUEST_BODY" | jq --raw-output '.dry_run // false')"
+
+          if [[ ! "$name" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$ ]]; then
+            echo "::error::El nombre de repositorio no es válido."
+            exit 1
+          fi
+          if [ "$visibility" != "private" ] && [ "$visibility" != "public" ]; then
+            echo "::error::visibility debe ser private o public."
+            exit 1
+          fi
+          if [ "$dry_run" != "true" ] && [ "$dry_run" != "false" ]; then
+            echo "::error::dry_run debe ser booleano."
+            exit 1
+          fi
+          if [ "${#description}" -gt 350 ]; then
+            echo "::error::La descripción supera 350 caracteres."
+            exit 1
+          fi
+
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "visibility=$visibility" >> "$GITHUB_OUTPUT"
+          echo "dry_run=$dry_run" >> "$GITHUB_OUTPUT"
+          {
+            echo 'description<<FACTORY_DESCRIPTION'
+            echo "$description"
+            echo 'FACTORY_DESCRIPTION'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Verificar identidad del token
+        env:
+          GH_TOKEN: ${{ secrets.REPO_CREATOR_TOKEN }}
+        run: |
+          login="$(gh api user --jq '.login')"
+          test "$login" = "Northzedam"
+
+      - name: Crear repositorio
+        id: repository
+        env:
+          GH_TOKEN: ${{ secrets.REPO_CREATOR_TOKEN }}
+          REPOSITORY_NAME: ${{ steps.request.outputs.name }}
+          REPOSITORY_VISIBILITY: ${{ steps.request.outputs.visibility }}
+          REPOSITORY_DESCRIPTION: ${{ steps.request.outputs.description }}
+          DRY_RUN: ${{ steps.request.outputs.dry_run }}
+        run: |
+          repository_url="https://github.com/Northzedam/$REPOSITORY_NAME"
+
+          if [ "$DRY_RUN" = "true" ]; then
+            result="Validación correcta; no se creó el repositorio."
+          elif gh api "repos/Northzedam/$REPOSITORY_NAME" >/dev/null 2>&1; then
+            result="El repositorio ya existía; no se modificó."
+          else
+            is_private=true
+            if [ "$REPOSITORY_VISIBILITY" = "public" ]; then
+              is_private=false
+            fi
+            gh api --method POST user/repos \
+              --raw-field "name=$REPOSITORY_NAME" \
+              --raw-field "description=$REPOSITORY_DESCRIPTION" \
+              --field "private=$is_private" \
+              --field 'auto_init=true' \
+              --field 'has_issues=true' \
+              --field 'has_projects=false' \
+              --field 'has_wiki=false' >/dev/null
+            result="Repositorio creado e inicializado correctamente."
+          fi
+
+          echo "url=$repository_url" >> "$GITHUB_OUTPUT"
+          echo "result=$result" >> "$GITHUB_OUTPUT"
+
+      - name: Informar y cerrar solicitud
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY_URL: ${{ steps.repository.outputs.url }}
+          RESULT: ${{ steps.repository.outputs.result }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          gh issue comment "$ISSUE_NUMBER" \
+            --repo "$GITHUB_REPOSITORY" \
+            --body "✅ $RESULT
+
+$REPOSITORY_URL"
+          gh issue close "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY"
+
+      - name: Resumen
+        run: |
+          echo "## ✅ Solicitud procesada" >> "$GITHUB_STEP_SUMMARY"
+          echo "${{ steps.repository.outputs.result }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "${{ steps.repository.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"

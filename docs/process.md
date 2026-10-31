@@ -2,17 +2,18 @@
 
 ## Aplicación nueva
 
-1. Resolver el repositorio exacto y su rama predeterminada.
-2. Inspeccionar visibilidad, permisos y contenido existente.
-3. Crear un commit inicial si el repositorio está completamente vacío.
-4. Copiar todos los archivos de `templates/native-lite`, incluyendo archivos ocultos.
-5. Generar y completar `app-spec.yml`.
-6. Cambiar nombre, `namespace`, `applicationId`, paquete Java, etiqueta, tema e icono.
-7. Implementar requisitos y verificar XML, recursos y sintaxis Java.
-8. Crear un único árbol Git y commit atómico.
-9. Mover `main` con compare-and-swap usando el SHA esperado.
-10. Monitorear el workflow automático.
-11. Verificar el artifact y entregar enlaces.
+1. Resolver el nombre deseado y comprobar que no exista.
+2. Crear una solicitud según `docs/provisioning.md` y monitorear su workflow.
+3. Esperar hasta que el nuevo repositorio aparezca en la conexión de GitHub.
+4. Inspeccionar visibilidad, permisos y contenido inicial.
+5. Copiar todos los archivos de `templates/native-lite`, incluyendo archivos ocultos.
+6. Generar y completar `app-spec.yml`.
+7. Cambiar nombre, `namespace`, `applicationId`, paquete Java, etiqueta, tema e icono.
+8. Implementar requisitos y verificar XML, recursos y sintaxis Java.
+9. Crear un único árbol Git y commit atómico.
+10. Mover `main` con compare-and-swap usando el SHA esperado.
+11. Monitorear el workflow automático.
+12. Verificar el artifact y entregar enlaces.
 
 ## Aplicación existente
 

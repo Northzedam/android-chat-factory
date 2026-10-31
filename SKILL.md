@@ -18,18 +18,19 @@ Do not stop at instructions or source generation. Continue until all authorized 
 
 ## Golden path
 
-1. Confirm the exact GitHub repository and inspect it read-only.
-2. Never touch another repository.
-3. If the repository is empty, bootstrap it from `templates/native-lite`.
-4. Generate `app-spec.yml` from the user's natural-language requirements; never ask the user to edit it.
-5. Replace the sample application name, package, colors, and Java package path consistently.
-6. Implement only requested v1 functionality and platform permissions.
-7. Prefer Android platform APIs. Add an external dependency only when a requested feature cannot reasonably be implemented with platform APIs, and record the reason.
-8. Publish changes atomically using GitHub Git data APIs when local Git is unavailable.
-9. Use a work branch and pull request for existing production applications. A new empty repository may be bootstrapped directly on `main`.
-10. Monitor the workflow steps. Post progress at meaningful milestones and at least once per minute during active work.
-11. On failure, inspect the failed step and narrow log excerpt, make a concrete correction, then create a new commit. Never rerun an unchanged failure.
-12. Fetch and verify the APK artifact before declaring success.
+1. Resolve the intended repository name and visibility. Default new application repositories to private.
+2. If the repository does not exist, create an owner-authored `[factory:create]` issue in `Northzedam/android-chat-factory` with the JSON contract from `docs/provisioning.md`. Monitor the provision workflow and wait until the new repository becomes accessible.
+3. Confirm the exact GitHub repository and inspect it read-only. Never touch another repository.
+4. If the repository is empty or only contains the provisioner README, bootstrap it from `templates/native-lite`.
+5. Generate `app-spec.yml` from the user's natural-language requirements; never ask the user to edit it.
+6. Replace the sample application name, package, colors, and Java package path consistently.
+7. Implement only requested v1 functionality and platform permissions.
+8. Prefer Android platform APIs. Add an external dependency only when a requested feature cannot reasonably be implemented with platform APIs, and record the reason.
+9. Publish changes atomically using GitHub Git data APIs when local Git is unavailable.
+10. Use a work branch and pull request for existing production applications. A newly provisioned repository may be bootstrapped directly on `main`.
+11. Monitor the workflow steps. Post progress at meaningful milestones and at least once per minute during active work.
+12. On failure, inspect the failed step and narrow log excerpt, make a concrete correction, then create a new commit. Never rerun an unchanged failure.
+13. Fetch and verify the APK artifact before declaring success.
 
 ## Progress protocol
 
