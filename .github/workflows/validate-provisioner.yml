@@ -1,0 +1,74 @@
+name: Validar permisos del provisionador
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/validate-provisioner.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-token:
+    name: Verificar token sin crear repositorios
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      REPO_CREATOR_TOKEN: ${{ secrets.REPO_CREATOR_TOKEN }}
+
+    steps:
+      - name: Confirmar que el secreto existe
+        run: |
+          if [ -z "${REPO_CREATOR_TOKEN:-}" ]; then
+            echo "::error::El secreto REPO_CREATOR_TOKEN no está configurado."
+            exit 1
+          fi
+
+      - name: Verificar identidad autenticada
+        run: |
+          login="$(curl --fail-with-body --silent --show-error \
+            --header "Authorization: Bearer $REPO_CREATOR_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/user | jq --raw-output '.login')"
+          if [ "$login" != "Northzedam" ]; then
+            echo "::error::El token pertenece a una identidad inesperada."
+            exit 1
+          fi
+
+      - name: Verificar permiso para crear repositorios
+        run: |
+          response_file="$(mktemp)"
+          status="$(curl --silent --show-error \
+            --output "$response_file" \
+            --write-out '%{http_code}' \
+            --request POST \
+            --header "Authorization: Bearer $REPO_CREATOR_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/user/repos \
+            --data '{"name":"android-chat-factory","private":true}')"
+
+          if [ "$status" = "422" ]; then
+            echo "Permiso confirmado: GitHub validó la creación y rechazó únicamente el nombre duplicado."
+          elif [ "$status" = "403" ]; then
+            message="$(jq --raw-output '.message // "Permiso insuficiente"' "$response_file")"
+            echo "::error::GitHub rechazó el permiso de creación: $message"
+            exit 1
+          elif [ "$status" = "401" ]; then
+            echo "::error::El token no es válido o expiró."
+            exit 1
+          else
+            message="$(jq --raw-output '.message // "Respuesta inesperada"' "$response_file")"
+            echo "::error::Respuesta inesperada de GitHub ($status): $message"
+            exit 1
+          fi
+
+      - name: Publicar resultado
+        run: |
+          echo "## ✅ Provisionador autorizado" >> "$GITHUB_STEP_SUMMARY"
+          echo "El secreto autentica como **Northzedam** y puede solicitar la creación de repositorios." >> "$GITHUB_STEP_SUMMARY"
+          echo "La validación usó un nombre duplicado; no se creó ni modificó ningún repositorio." >> "$GITHUB_STEP_SUMMARY"
