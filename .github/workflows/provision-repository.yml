@@ -110,11 +110,10 @@ jobs:
           RESULT: ${{ steps.repository.outputs.result }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
+          comment_body="$(printf '✅ %s\n\n%s' "$RESULT" "$REPOSITORY_URL")"
           gh issue comment "$ISSUE_NUMBER" \
             --repo "$GITHUB_REPOSITORY" \
-            --body "✅ $RESULT
-
-$REPOSITORY_URL"
+            --body "$comment_body"
           gh issue close "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY"
 
       - name: Resumen
